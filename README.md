@@ -1,2 +1,2 @@
 # trash
-Public trashcan :)
+Публичная файловая помойка
