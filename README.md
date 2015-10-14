@@ -1,0 +1,2 @@
+# trash
+Public trashcan :)
