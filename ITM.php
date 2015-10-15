@@ -530,7 +530,10 @@ class HTML_Template_IT
         }
 
         if (!isset($this->blocklist[$block])) {
+            /* mod 0.1 <---
             $this->err[] = PEAR::raiseError(
+            */
+            $this->err[] = $this->raiseError(
                 $this->errorMessage(IT_BLOCK_NOT_FOUND) . '"' . $block . "'",
                 IT_BLOCK_NOT_FOUND
             );
@@ -577,7 +580,10 @@ class HTML_Template_IT
         static $regs, $values;
 
         if (!isset($this->blocklist[$block])) {
+            /* mod 0.1 <---
             return PEAR::raiseError(
+            */
+            return $this->raiseError(
                 $this->errorMessage(IT_BLOCK_NOT_FOUND) . '"' . $block . "'",
                 IT_BLOCK_NOT_FOUND
             );
