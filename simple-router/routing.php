@@ -9,8 +9,9 @@
  *	{id} any non '/' named as 'id' in eventparams
  *	{id|str} any non '/' named as 'id' in eventparams
  *	{num1|int} only digits named as 'num1' in eventparams
- *	{bar2|any} any chars named as 'bar2' in eventparams,
- *	be careful! 'any' should be last part of route because it takes slashes '/'
+ *	{bar2|raw} any chars named as 'bar2' in eventparams,
+ *	be careful! 'raw' should be last part of route because it takes slashes '/'
+ *	and it's values is not urlencoded in 'find' function result URL
  * @param module string snake_case, default if omitted
  * @param event string without prefix, default if omitted
  * @param method string GET or POST or any if omitted
@@ -20,6 +21,6 @@ return array(
 	['/user/{id|int}',	'user',	'profile',	'get'],
 	['/user/{id}/update',	'user',	'save_profile',	'post'],
 	['/catalog/{section1}/{section2}', 'catalog', 'show'],
-	['/blog/filter/{filter|any}', 'blog', 'list'],
+	['/blog/filter/{filter|raw}', 'blog', 'list'],
 	['/blog/filter/{tag}', 'blog', 'list'],
 );

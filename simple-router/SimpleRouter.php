@@ -63,7 +63,7 @@ class SimpleRouter
 		$name = $a['name'];
 		$type = @$a['type'];
 		switch($type) {
-			case 'any':
+			case 'raw':
 				return "(?P<$name>.+)";
 			case 'int':
 				return "(?P<$name>[0-9]+)";
@@ -92,7 +92,7 @@ class SimpleRouter
 					if(preg_match("@\{$key\}@", $rr) && preg_match("@^[^/]+$@", $value) ||
 					   preg_match("@\{$key\|str}@", $rr) && preg_match("@^[^/]+$@", $value) ||
 					   preg_match("@\{$key\|int\}@", $rr) && preg_match("@^[0-9]+$@", $value) ||
-					   preg_match("@\{$key\|any\}@", $rr) && preg_match("@^.+$@", $value)) {
+					   preg_match("@\{$key\|raw\}@", $rr) && preg_match("@^.+$@", $value)) {
 						$found++;
 					}
 				}
@@ -100,7 +100,7 @@ class SimpleRouter
 					$url = preg_replace_callback('@{(?P<name>[a-z0-9]+)(\|(?P<type>[a-z0-9]+))?}@i', function($a) use($eventparams){
 						$key = $a['name'];
 						$type = @$a['type'];
-						if($type == 'any') {
+						if($type == 'raw') {
 							return $eventparams[$key];
 						}
 						else {
