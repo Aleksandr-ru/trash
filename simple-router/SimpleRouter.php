@@ -1,7 +1,7 @@
 <?php
 class SimpleRouter
 {
-	protected static $routing = [];
+	protected $routing = [];
 	protected $route = [];
 	protected $default_module = 'DEFAULT';
 	protected $default_event = 'DEFAULT';
@@ -14,7 +14,7 @@ class SimpleRouter
 	{
 		if(!count($this->routing)) {
 			$this->routing = require('./routing.php');
-			$base = preg_replace('^[a-z0-9]+://[^/]+/', '/', $base);
+			$base = preg_replace('@^[a-z0-9]+://[^/]+/@', '/', $base);
 			if($base) foreach($this->routing as &$r) {
 				$r[0] = '/' . trim($base, '/') . $r[0];
 			}
@@ -50,7 +50,7 @@ class SimpleRouter
 				if($method == 'POST') {
 					$this->route['queryparams'] = array_merge($route['queryparams'], $_POST);
 				}
-				return true;
+				return $this->route;
 			}
 		}
 		if(!$method) $method = '*';
@@ -63,8 +63,11 @@ class SimpleRouter
 		$name = $a['name'];
 		$type = @$a['type'];
 		switch($type) {
+			case 'any':
+				return "(?P<$name>.+)";
 			case 'int':
 				return "(?P<$name>[0-9]+)";
+			case 'str':
 			default:
 				return "(?P<$name>[^/]+)";
 		}
@@ -86,17 +89,26 @@ class SimpleRouter
 			if(($module == $mod || $module == $this->default_module && !$mod) && ($event == $evt || $event == $this->default_event && !$evt) && (strtoupper($method) == strtoupper($met) || !$method)) {
 				$found = 0;
 				foreach($eventparams as $key=>&$value) {
-					if(preg_match("@\{$key\}@", $rr) && preg_match("@^[^/]+$@", $value) || preg_match("@\{$key\|int\}@", $rr) && preg_match("@^[0-9]+$@", $value)) {
+					if(preg_match("@\{$key\}@", $rr) && preg_match("@^[^/]+$@", $value) ||
+					   preg_match("@\{$key\|str}@", $rr) && preg_match("@^[^/]+$@", $value) ||
+					   preg_match("@\{$key\|int\}@", $rr) && preg_match("@^[0-9]+$@", $value) ||
+					   preg_match("@\{$key\|any\}@", $rr) && preg_match("@^.+$@", $value)) {
 						$found++;
 					}
 				}
 				if(count($eventparams) == $found) {
-					$url = preg_replace_callback('@{(?P<name>[a-z0-9]+)(\|[a-z0-9]+)?}@i', function($a) use($eventparams){
+					$url = preg_replace_callback('@{(?P<name>[a-z0-9]+)(\|(?P<type>[a-z0-9]+))?}@i', function($a) use($eventparams){
 						$key = $a['name'];
-						return $eventparams[$key];
+						$type = @$a['type'];
+						if($type == 'any') {
+							return $eventparams[$key];
+						}
+						else {
+							return rawurlencode($eventparams[$key]);
+						}
 					}, $rr);
 					if(is_array($queryparams) && count($queryparams)) {
-						$url .= '?' . http_build_query($queryparams);
+						$url .= '?' . http_build_query($queryparams, null, '&', PHP_QUERY_RFC3986);
 					}
 					return $url;
 				}

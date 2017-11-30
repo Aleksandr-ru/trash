@@ -14,3 +14,7 @@ echo "<br>";
 print_r($router->find('user', 'save_profile', ['id' => 'test'], ['a' => 'b']));
 echo "<br>";
 print_r($router->find('catalog', 'show', ['section2' => 222, 'section1' => 111], ['a' => 'b']));
+echo "<br>";
+print_r($router->find('blog', 'list', ['filter' => 'page/2/tag/test tag'], ['a' => 'b']));
+echo "<br>";
+print_r($router->find('blog', 'list', ['tag' => 'test tag'], ['a' => 'somthing with spaces', 'b' => 'noSpaces']));
